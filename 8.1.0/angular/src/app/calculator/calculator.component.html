@@ -1,0 +1,364 @@
+<div [@routerTransition]>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <h1>{{ "Profit Calculator" | localize }}</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content px-2">
+        <!-- Starting Values -->
+        <h4 class="text-center">Starting Values</h4>
+        <div class="info-box mt-4">
+            <div class="info-box-content py-3">
+                <div class="row">
+                    <div class="col-lg-4 text-center">
+                        Jobs Per Month
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <input [value]="getValue('jobsPerMonth') || 0" (blur)="setStartingValue('jobsPerMonth', $event.target.value)">
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        Number of jobs completed each month
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-4 text-center">
+                        Payroll / Revenue Percent
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <input [value]="getValue('payrollRevenuePercent') || 0" (blur)="setStartingValue('payrollRevenuePercent', $event.target.value)">%
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        Payroll to Revenue percentage
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-4 text-center">
+                        Bill rate per Job
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        $ <input [value]="getValue('bullRatePerJob') || 0" (blur)="setStartingValue('bullRatePerJob', $event.target.value)">
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        Average bill rate per job
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-4 text-center">
+                        Recurring Homes Lost/Month
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <input [value]="getValue('recurringHomesLostPerMonth') || 0" (blur)="setStartingValue('recurringHomesLostPerMonth', $event.target.value)">%
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        Percentage of homes expected to be lost because of rate increase
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-4 text-center">
+                        Net Profit
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <input [value]="getValue('netProfit') || 0" (blur)="setStartingValue('netProfit', $event.target.value)">%
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        Percentage of net profit
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-4 text-center">
+                        % Rate Increase
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <input [value]="getValue('percentRateIncrease') || 0" (blur)="setStartingValue('percentRateIncrease', $event.target.value)">%
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        Percent to increase each customer's rate
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-4 text-center">
+                        % Expected Job Loss
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <input [value]="getValue('percentExpectedJobLoss') || 0" (blur)="setStartingValue('percentExpectedJobLoss', $event.target.value)">%
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        Percent expected jobns to lose because of rate increase
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Rate Increase -->
+        <h4 class="text-center">Rate Increase</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="bg-light">
+                    <tr>
+                        <th></th>
+                        <th>Current</th>
+                        <th></th>
+                        <th>Hourly or Allowed Hour</th>
+                        <th></th>
+                        <th>Fee Split</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bill/Job</td>
+                        <td>{{ getValue('bullRatePerJob') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('billPerJobHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('billPerJobHourly') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Jobs/Month</td>
+                        <td>{{ getValue('jobsPerMonth') }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('jobsPerMonthHourly') }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('jobsPerMonthHourly') }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Revenue</td>
+                        <td>{{ getCalculation('revenue') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('revenueHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('revenueFeeSplit') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>COGS (Payroll/Revenue)</td>
+                        <td>{{ getCalculation('cogs') | currency }}</td>
+                        <td>{{ getValue('payrollRevenuePercent') }}%</td>
+                        <td>{{ getCalculation('cogsHourly') | currency }}</td>
+                        <td>{{ getCalculation('cogsPercentHourly') }}%</td>
+                        <td>{{ getCalculation('cogsFeeSplit') | currency }}</td>
+                        <td>{{ getValue('payrollRevenuePercent') }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Gross Profit</td>
+                        <td>{{ getCalculation('grossProfit') | currency }}</td>
+                        <td>{{ getCalculation('grossProfitPercent') | percent }}</td>
+                        <td>{{ getCalculation('grossProfitHourly') | currency }}</td>
+                        <td>63.64%</td>
+                        <td>{{ getCalculation('grossProfitFeeSplit') | currency }}</td>
+                        <td>{{ getCalculation('grossProfitPercent') | percent }}</td>
+                    </tr>
+                    <tr>
+                        <td>Extra Gross Profit - Rate Increase</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitMinRateIncreaseHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitMinRateIncreaseFeeSplit') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Net Profit</td>
+                        <td>{{ getCalculation('netProfitCurrent') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitFeeSplit') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Net Profit % Increase</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitPercentIncreaseHourly').toFixed(2) | percent }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitPercentIncreaseFeeSplit').toFixed(2) | percent }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Lower PR/Rev -->
+        <h4 class="text-center">Lower PR/Rev</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="bg-light">
+                    <tr>
+                        <th></th>
+                        <th>Current</th>
+                        <th>Hourly or Allowed Hour</th>
+                        <th></th>
+                        <th>Fee Split</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lower Payroll/Revenue Percent</td>
+                        <td><input [value]="getValue('lowerPayrollRevenuePercent') || 0" (blur)="setStartingValue('lowerPayrollRevenuePercent', $event.target.value)">%</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Payroll to Revenue</td>
+                        <td>{{ getValue('payrollRevenuePercent') }}%</td>
+                        <td>{{ getCalculation('payrollRevenueHourly') | currency }}</td>
+                        <td>{{ getCalculation('payrollRevenuePercentHourly') }}%</td>
+                        <td>{{ getCalculation('payrollRevenueFeeSplit') | currency }}</td>
+                        <td>{{ getCalculation('payrollRevenuePercentFeeSplit') | percent }}</td>
+                    </tr>
+                    <tr>
+                        <td>Extra Gross Profit - Lower Payroll/Revenue</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitLowerPayrollHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitLowerPayrollFeeSplit') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Extra Gross Profit - Subtotal</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitSubtotalHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitSubtotalFeeSplit') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Net Profit - Subtotal</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitSubtotalHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitSubtotalFeeSplit') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Net Profit % Increase - Subtotal</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitPercentIncreaseSubHourly').toFixed(2) | percent }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitPercentIncreaseSubFeeSplit').toFixed(2) | percent }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Lower Customer Turnover -->
+        <h4 class="text-center">Lower Customer Turnover</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="bg-light">
+                    <tr>
+                        <th></th>
+                        <th>Current</th>
+                        <th>Hourly or Allowed Hour</th>
+                        <th></th>
+                        <th>Fee Split</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Improve Recurring Homes Lost/Month</td>
+                        <td><input [value]="getValue('improveRecurringHomesLostPerMonth') || 0" (blur)="setStartingValue('improveRecurringHomesLostPerMonth', $event.target.value)">%</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Number of Recurring Homes Lost/Month</td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthCurrent') }}</td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthHourly') }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthFeeSplit') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Number of Recurring Homes Sold/Month</td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthCurrent') }}</td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthCurrent') }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthCurrent') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Recurring Homes Lost/Month</td>
+                        <td>{{ getValue('recurringHomesLostPerMonth') }}%</td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthPercentageHourly') }}%</td>
+                        <td></td>
+                        <td>{{ getCalculation('recurringHomesLostPerMonthPercentageFeeSplit') }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Flat Line Recurring Jobs</td>
+                        <td>{{ getCalculation('flatLineRecurringJobsCurrent') }}</td>
+                        <td>{{ getCalculation('flatLineRecurringJobsHourly') }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('flatLineRecurringJobsFeeSplit') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Extra Recurring Jobs/Month</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraRecurringJobsPerMonthHourly') }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraRecurringJobsPerMonthFeeSplit') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Extra Revenue</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraRevenueHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraRevenueFeeSplit') | currency }}</td>
+                    </tr>
+                    <tr>
+                        <td>Extra Gross Profit</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('extraGrossProfitFeeSplit') | currency }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Totals -->
+        <h4 class="text-center">Totals</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="bg-light">
+                    <tr>
+                        <th></th>
+                        <th>Hourly or Allowed Hour</th>
+                        <th></th>
+                        <th>Fee Split</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TOTAL REVENUE/MONTH</td>
+                        <td>{{ getCalculation('totalRevenueMonthHourly') | currency }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('totalRevenueMonthFeeSplit') | currency }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>NET PROFIT TOTAL/MONTH</td>
+                        <td>{{ getCalculation('netProfitMonthHourly') | currency }}</td>
+                        <td>{{ getCalculation('netProfitMonthHourlyPercentage').toFixed(2) | percent }}</td>
+                        <td>{{ getCalculation('netProfitMonthFeeSplit') | currency }}</td>
+                        <td>{{ getCalculation('netProfitMonthFeeSplitPercentage').toFixed(2) | percent }}</td>
+                    </tr>
+                    <tr>
+                        <td>NET PROFIT % INCREASE - TOTAL</td>
+                        <td>{{ getCalculation('netProfitPercentIncreaseTotalHourly').toFixed(2) | percent }}</td>
+                        <td></td>
+                        <td>{{ getCalculation('netProfitPercentIncreaseTotalFeeSplit').toFixed(2) | percent }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
